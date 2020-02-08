@@ -2,5 +2,14 @@
 <div *ngIf="game">
     <div *ngIf="game.currentVillager">
         <img [src]="game.currentVillager.houseImageUrl" alt="" />
+        <div *ngIf="!game.completed">
+            <div *ngIf="game.mode == GameMode.MultipleChoice">
+                <ul>
+                    <li *ngFor="let option of game.options">
+                        <button type="button" (click)="guess(option.name)">{{ option.name }}</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </div>

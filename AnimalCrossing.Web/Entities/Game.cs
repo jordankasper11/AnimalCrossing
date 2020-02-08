@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 
 namespace AnimalCrossing.Web.Entities
 {
+    public enum GameMode
+    {
+        Guess,
+        MultipleChoice
+    }
+
     public class GuessRequest
     {
         public Guid GameId { get; set; }
@@ -43,20 +49,24 @@ namespace AnimalCrossing.Web.Entities
         }
     }
 
+    public class VillagerOption
+    {
+        public Guid Id { get; private set; }
+
+        public string Name { get; private set; }
+
+        public VillagerOption(Villager villager)
+        {
+            this.Id = villager.Id;
+            this.Name = villager.Name;
+        }
+    }
+
     public class Game
     {
         public Guid Id { get; set; }
 
-        public CurrentVillager CurrentVillager
-        {
-            get
-            {
-                if (this.RemainingVillagers?.FirstOrDefault() != null)
-                    return new CurrentVillager(this.RemainingVillagers.First());
-
-                return null;
-            }
-        }
+        public GameMode Mode { get; set; }
 
         public bool Completed
         {
@@ -70,6 +80,34 @@ namespace AnimalCrossing.Web.Entities
 
         public int Skips { get; private set; }
 
+        public CurrentVillager CurrentVillager
+        {
+            get
+            {
+                if (this.RemainingVillagers?.FirstOrDefault() != null)
+                    return new CurrentVillager(this.RemainingVillagers.First());
+
+                return null;
+            }
+        }
+
+        public IEnumerable<VillagerOption> Options
+        {
+            get
+            {
+                if (this.Mode == GameMode.MultipleChoice && this.RemainingVillagers?.Any() == true)
+                {
+                    return this.RemainingVillagers
+                        .OrderBy(v => Guid.NewGuid())
+                        .Take(10)
+                        .OrderBy(v => v.Name)
+                        .Select(v => new VillagerOption(v));
+                }
+
+                return null;
+            }
+        }
+
         private List<Villager> RemainingVillagers { get; set; }
 
         private List<Villager> CompletedVillagers { get; set; }
@@ -80,9 +118,10 @@ namespace AnimalCrossing.Web.Entities
             this.CompletedVillagers = new List<Villager>();
         }
 
-        public Game(IEnumerable<Villager> villagers)
+        public Game(GameMode gameMode, IEnumerable<Villager> villagers)
         {
             this.Id = Guid.NewGuid();
+            this.Mode = gameMode;
             this.RemainingVillagers = villagers.OrderBy(v => Guid.NewGuid()).ToList();
             this.CompletedVillagers = new List<Villager>();
         }

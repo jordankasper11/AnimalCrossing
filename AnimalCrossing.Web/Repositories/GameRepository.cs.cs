@@ -19,9 +19,9 @@ namespace AnimalCrossing.Web.Repositories
             _cache = cache;
         }
 
-        public Game Create(IEnumerable<Villager> villagers)
+        public Game Create(GameMode gameMode, IEnumerable<Villager> villagers)
         {
-            var game = new Game(villagers);
+            var game = new Game(gameMode, villagers);
             var cacheKey = GetCacheKey(game.Id);
 
             _cache.Set(cacheKey, game, new MemoryCacheEntryOptions() { SlidingExpiration = new TimeSpan(2, 0, 0, 0) });

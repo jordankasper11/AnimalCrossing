@@ -21,9 +21,9 @@ namespace AnimalCrossing.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult<Game> Get()
+        public ActionResult<Game> Create([FromQuery]GameMode mode)
         {
-            var game = _gameRepository.Create(_villagerRepository.Villagers);
+            var game = _gameRepository.Create(mode, _villagerRepository.Villagers);
 
             return Ok(game);
         }
