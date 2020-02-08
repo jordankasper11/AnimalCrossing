@@ -24,6 +24,7 @@ namespace AnimalCrossing.Web
 
             services.AddSingleton<GameRepository>();
             services.AddControllers();
+            services.AddSpaStaticFiles(configuration => configuration.RootPath = "wwwroot");
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -33,6 +34,13 @@ namespace AnimalCrossing.Web
 
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseSpaStaticFiles();
+
+            app.UseSpa(builder =>
+            {
+                if (env.IsDevelopment())
+                    builder.UseProxyToSpaDevelopmentServer($"http://localhost:4200/");
+            });
         }
     }
 }
