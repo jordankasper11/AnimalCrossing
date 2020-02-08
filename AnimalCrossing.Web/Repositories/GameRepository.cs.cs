@@ -1,4 +1,4 @@
-﻿using AnimalCrossingTest.Web.Entities;
+﻿using AnimalCrossing.Web.Entities;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace AnimalCrossingTest.Web.Repositories
+namespace AnimalCrossing.Web.Repositories
 {
     public class GameRepository
     {

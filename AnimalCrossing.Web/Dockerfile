@@ -6,16 +6,16 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["AnimalCrossingTest.csproj", ""]
-RUN dotnet restore "./AnimalCrossingTest.csproj"
+COPY ["AnimalCrossing.csproj", ""]
+RUN dotnet restore "./AnimalCrossing.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "AnimalCrossingTest.csproj" -c Release -o /app/build
+RUN dotnet build "AnimalCrossing.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "AnimalCrossingTest.csproj" -c Release -o /app/publish
+RUN dotnet publish "AnimalCrossing.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "AnimalCrossingTest.dll"]
+ENTRYPOINT ["dotnet", "AnimalCrossing.dll"]

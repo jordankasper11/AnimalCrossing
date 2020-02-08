@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AnimalCrossingTest.Web.Entities;
-using AnimalCrossingTest.Web.Repositories;
+using AnimalCrossing.Web.Entities;
+using AnimalCrossing.Web.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AnimalCrossingTest.Web.Controllers
+namespace AnimalCrossing.Web.Controllers
 {
     [Route("api/Game")]
     public class GameController : Controller

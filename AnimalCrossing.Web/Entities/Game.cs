@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AnimalCrossingTest.Web.Entities
+namespace AnimalCrossing.Web.Entities
 {
     public class GuessRequest
     {

@@ -14,7 +14,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "AnimalCrossingTest": {
+    "AnimalCrossing": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

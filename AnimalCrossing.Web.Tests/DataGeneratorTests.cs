@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace AnimalCrossingTest.Web.Tests
+namespace AnimalCrossing.Web.Tests
 {
     public class Villager
     {
@@ -39,7 +39,7 @@ namespace AnimalCrossingTest.Web.Tests
         [TestMethod]
         public async Task GetVillagersJson()
         {
-            var contents = await File.ReadAllTextAsync("C:\\Projects\\AnimalCrossingTest\\Source.txt");
+            var contents = await File.ReadAllTextAsync("C:\\Projects\\AnimalCrossing\\Source.txt");
             var hyperlinks = Regex.Matches(contents, "<a href=\"(?<VillagerUrl>[^\"]+)\">(?:<strong>)?(?<VillagerName>[^<]+)(?:</strong>)?</a>", RegexOptions.IgnoreCase);
             var houseImages = Regex.Matches(contents, "(?<=<img src=\")[^\"]+\\.jpe?g", RegexOptions.IgnoreCase);
             var villagers = new List<Villager>();
@@ -64,7 +64,7 @@ namespace AnimalCrossingTest.Web.Tests
         private async Task<string> SaveHouseImage(Guid id, string url)
         {
             var fileName = $"{id}-house.jpg";
-            var filePath = $"C:\\Projects\\AnimalCrossingTest\\images\\{fileName}";
+            var filePath = $"C:\\Projects\\AnimalCrossing\\images\\{fileName}";
 
             using (var httpClient = new HttpClient())
             {

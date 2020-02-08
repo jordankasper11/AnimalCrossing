@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace AnimalCrossingTest.Web.Entities
+namespace AnimalCrossing.Web.Entities
 {
     public class Villager
     {

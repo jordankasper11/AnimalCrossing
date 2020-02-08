@@ -1,4 +1,4 @@
-﻿using AnimalCrossingTest.Web.Entities;
+﻿using AnimalCrossing.Web.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace AnimalCrossingTest.Web.Repositories
+namespace AnimalCrossing.Web.Repositories
 {
     public class VillagerRepository
     {

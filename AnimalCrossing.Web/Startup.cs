@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AnimalCrossingTest.Web.Repositories;
+using AnimalCrossing.Web.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace AnimalCrossingTest.Web
+namespace AnimalCrossing.Web
 {
     public class Startup
     {
@@ -19,7 +19,7 @@ namespace AnimalCrossingTest.Web
 
             services.AddSingleton<VillagerRepository>(serviceProvider =>
             {
-                return new VillagerRepository("C:\\Projects\\AnimalCrossingTest\\villagers.json");
+                return new VillagerRepository("C:\\Projects\\AnimalCrossing\\villagers.json");
             });
 
             services.AddSingleton<GameRepository>();
