@@ -12,6 +12,7 @@ export class CurrentVillager {
 export class VillagerOption {
     public id: string;
     public name: string;
+    public available: boolean;
 }
 
 export enum GameMode {
@@ -23,8 +24,24 @@ export class Game {
     public id: string;
     public mode: GameMode;
     public completed: boolean;
+    public correctGuesses: number;
     public wrongGuesses: number;
     public skips: number;
     public currentVillager: CurrentVillager;
     public options: Array<VillagerOption>;
+}
+
+export class GuessRequest {
+    constructor(public gameId: string, public name: string) {        
+    }
+}
+
+export class GuessResponse {
+    public success: boolean;
+    public game: Game;
+}
+
+export class SkipRequest {
+    constructor(public gameId: string){        
+    }
 }

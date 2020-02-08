@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AnimalCrossing.Web.Entities
 {
-    public class Villager
+    public class Villager : ICloneable
     {
         public Guid Id { get; set; }
 
@@ -26,6 +26,18 @@ namespace AnimalCrossing.Web.Entities
             this.Name = name;
             this.Url = url;
             this.HouseFileName = houseFileName;
+        }
+
+        public object Clone()
+        {
+            var villager = new Villager();
+
+            villager.Id = this.Id;
+            villager.Name = this.Name;
+            villager.Url = this.Url;
+            villager.HouseFileName = this.HouseFileName;
+
+            return villager;
         }
     }
 }

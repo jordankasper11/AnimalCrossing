@@ -22,7 +22,7 @@ namespace AnimalCrossing.Web.Entities
     {
         public Game Game { get; set; }
 
-        public bool Success {get;set;}
+        public bool Success { get; set; }
 
         public GuessResponse(Game game, bool success)
         {
@@ -55,10 +55,18 @@ namespace AnimalCrossing.Web.Entities
 
         public string Name { get; private set; }
 
+        public bool Available { get; private set; }
+
         public VillagerOption(Villager villager)
         {
             this.Id = villager.Id;
             this.Name = villager.Name;
+            this.Available = true;
+        }
+
+        public void SetAsUnvailable()
+        {
+            this.Available = false;
         }
     }
 
@@ -76,9 +84,19 @@ namespace AnimalCrossing.Web.Entities
             }
         }
 
+        public int CorrectGuesses { get; private set; }
+
         public int WrongGuesses { get; private set; }
 
         public int Skips { get; private set; }
+
+        public int Remaining
+        {
+            get
+            {
+                return this.RemainingVillagers.Count;
+            }
+        }
 
         public CurrentVillager CurrentVillager
         {
@@ -91,39 +109,43 @@ namespace AnimalCrossing.Web.Entities
             }
         }
 
-        public IEnumerable<VillagerOption> Options
+        public List<VillagerOption> Options { get; private set; }
+
+        private Dictionary<Villager, bool> Villagers { get; set; }
+
+        private List<Villager> RemainingVillagers
         {
             get
             {
-                if (this.Mode == GameMode.MultipleChoice && this.RemainingVillagers?.Any() == true)
-                {
-                    return this.RemainingVillagers
-                        .OrderBy(v => Guid.NewGuid())
-                        .Take(10)
-                        .OrderBy(v => v.Name)
-                        .Select(v => new VillagerOption(v));
-                }
-
-                return null;
+                return this.Villagers
+                    .Where(v => !v.Value)
+                    .Select(v => v.Key)
+                    .ToList();
             }
         }
 
-        private List<Villager> RemainingVillagers { get; set; }
-
-        private List<Villager> CompletedVillagers { get; set; }
-
-        public Game()
+        private List<Villager> CompletedVillagers
         {
-            this.RemainingVillagers = new List<Villager>();
-            this.CompletedVillagers = new List<Villager>();
+            get
+            {
+                return this.Villagers
+                    .Where(v => v.Value)
+                    .Select(v => v.Key)
+                    .ToList();
+            }
         }
 
         public Game(GameMode gameMode, IEnumerable<Villager> villagers)
         {
             this.Id = Guid.NewGuid();
             this.Mode = gameMode;
-            this.RemainingVillagers = villagers.OrderBy(v => Guid.NewGuid()).ToList();
-            this.CompletedVillagers = new List<Villager>();
+
+            this.Villagers = villagers
+                .Select(v => (Villager)v.Clone())
+                .OrderBy(v => Guid.NewGuid())
+                .ToDictionary(v => v, v => false);
+
+            SetOptions();
         }
 
         public bool Guess(string name)
@@ -136,13 +158,24 @@ namespace AnimalCrossing.Web.Entities
 
             if (name.Equals(villager.Name, StringComparison.OrdinalIgnoreCase))
             {
+                this.CorrectGuesses++;
+
                 MoveToNextVillager();
+                SetOptions();
 
                 return true;
             }
             else
             {
                 this.WrongGuesses++;
+
+                if (this.Options?.Any() == true)
+                {
+                    var option = this.Options.FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+                    if (option != null)
+                        option.SetAsUnvailable();
+                }
 
                 return false;
             }
@@ -169,6 +202,26 @@ namespace AnimalCrossing.Web.Entities
 
             this.RemainingVillagers.Remove(villager);
             this.CompletedVillagers.Add(villager);
+        }
+
+        private void SetOptions()
+        {
+            if (this.Mode == GameMode.MultipleChoice && this.RemainingVillagers?.Any() == true)
+            {
+                var villagers = this.Villagers.Keys
+                    .OrderBy(v => Guid.NewGuid())
+                    .Take(9)
+                    .ToList();
+
+                villagers.Add(this.RemainingVillagers.First());
+
+                this.Options = villagers
+                    .OrderBy(v => v.Name)
+                    .Select(v => new VillagerOption(v))
+                    .ToList();
+            }
+            else
+                this.Options = null;
         }
     }
 }

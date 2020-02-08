@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Game, GameMode } from './models';
+import { Game, GameMode, GuessRequest, GuessResponse, SkipRequest } from './models';
 
 @Injectable({
     providedIn: 'root'
@@ -20,5 +20,17 @@ export class GameService {
         const requestUrl = '/api/Game/${id}';
 
         return this.httpClient.get<Game>(requestUrl);
+    }
+
+    guess(request: GuessRequest): Observable<GuessResponse> {
+        const requestUrl = '/api/Game/Guess';
+
+        return this.httpClient.post<GuessResponse>(requestUrl, request);
+    }
+
+    skip(request: SkipRequest): Observable<Game> {
+        const requestUrl = '/api/Game/Guess';
+
+        return this.httpClient.post<Game>(requestUrl, request);
     }
 }

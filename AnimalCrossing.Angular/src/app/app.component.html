@@ -1,15 +1,40 @@
-{{ game | json }}
 <div *ngIf="game">
     <div *ngIf="game.currentVillager">
         <img [src]="game.currentVillager.houseImageUrl" alt="" />
-        <div *ngIf="!game.completed">
+        <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
+            <div *ngIf="game.mode == GameMode.Guess">
+                <input type="text" id="name" formControlName="name" />
+                <button type="submit">Guess</button>
+            </div>
             <div *ngIf="game.mode == GameMode.MultipleChoice">
                 <ul>
                     <li *ngFor="let option of game.options">
-                        <button type="button" (click)="guess(option.name)">{{ option.name }}</button>
+                        <input type="radio" [id]="option.id" name="name" formControlName="name" [value]="option.name"
+                            [attr.disabled]="!option.available ? true : null" />
+                        <label [for]="option.id">{{ option.name }}</label>
                     </li>
                 </ul>
             </div>
+            <button type="button" (click)="skip()">Skip</button>
+        </form>
+        <button type="button" (click)="newGame()">New Game</button>
+    </div>
+    <div>
+        <div>
+            <span>{{ game.correctGuesses }}</span>
+            <span>Correct Guesses</span>
+        </div>
+        <div>
+            <span>{{ game.wrongGuesses }}</span>
+            <span>Wrong Guesses</span>
+        </div>
+        <div>
+            <span>{{ game.skips }}</span>
+            <span>Skips</span>
+        </div>
+        <div>
+            <span>{{ game.remaining }}</span>
+            <span>Remaining Villagers</span>
         </div>
     </div>
 </div>
