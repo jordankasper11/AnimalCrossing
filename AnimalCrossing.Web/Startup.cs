@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AnimalCrossing.Web.Repositories;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 namespace AnimalCrossing.Web
@@ -19,7 +21,7 @@ namespace AnimalCrossing.Web
 
             services.AddSingleton<VillagerRepository>(serviceProvider =>
             {
-                return new VillagerRepository("C:\\Projects\\AnimalCrossing\\villagers.json");
+                return new VillagerRepository(Path.Combine(Directory.GetCurrentDirectory(), "data", "villagers.json"));
             });
 
             services.AddSingleton<GameRepository>();
@@ -31,6 +33,12 @@ namespace AnimalCrossing.Web
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                RequestPath = new PathString("/images"),
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "images"))
+            });
 
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());

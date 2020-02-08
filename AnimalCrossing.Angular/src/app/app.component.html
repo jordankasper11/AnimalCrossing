@@ -1,0 +1,6 @@
+{{ game | json }}
+<div *ngIf="game">
+    <div *ngIf="game.currentVillager">
+        <img [src]="game.currentVillager.houseImageUrl" alt="" />
+    </div>
+</div>

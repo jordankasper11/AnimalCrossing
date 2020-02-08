@@ -30,15 +30,31 @@ namespace AnimalCrossing.Web.Entities
         public Guid GameId { get; set; }
     }
 
+    public class CurrentVillager
+    {
+        public Guid Id { get; private set; }
+
+        public string HouseImageUrl { get; private set; }
+
+        public CurrentVillager(Villager villager)
+        {
+            this.Id = villager.Id;
+            this.HouseImageUrl = $"/images/houses/{villager.HouseFileName}";
+        }
+    }
+
     public class Game
     {
         public Guid Id { get; set; }
 
-        public string CurrentHouseImageUrl
+        public CurrentVillager CurrentVillager
         {
             get
             {
-                return this.RemainingVillagers?.FirstOrDefault()?.HouseFileName;
+                if (this.RemainingVillagers?.FirstOrDefault() != null)
+                    return new CurrentVillager(this.RemainingVillagers.First());
+
+                return null;
             }
         }
 
