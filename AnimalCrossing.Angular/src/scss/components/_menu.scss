@@ -1,0 +1,131 @@
+.menu-toggle {
+    display: block;
+    margin: 0 0 -50px 0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
+
+    &:before {
+        content: '\f0c9';
+        font-family: 'Font Awesome';
+        font-size: 22px;
+    }
+
+    &:hover {
+        background: $color-primary-light;
+    }
+
+    @include responsive-tablet {
+        display: none;
+    }
+}
+
+.menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    box-shadow: 7px 1px 4px -1px rgba(0,0,0,0.29);
+    width: 120px;
+    background: $color-primary;
+    color: $color-white;
+
+    nav {
+        li {
+            position: relative;
+        }
+
+        span {
+            display: block;
+            margin: 20px 0 0 0;
+            font-family: $font-primary;
+            font-weight: normal;
+        }
+
+        a {
+            display: block;
+            padding: $padding 0;
+            text-align: center;
+            text-decoration: none;
+
+            &:before {
+                font-family: 'Font Awesome';
+                font-size: 28px;
+                font-weight: normal;
+            }
+
+            &:hover {
+                background: $color-primary-light;
+                text-decoration: none;
+            }
+
+            &.notifications {
+                &:after {
+                    content: '\f12a';
+                    position: absolute;
+                    height: 20px;
+                    width: 20px;
+                    line-height: 20px;
+                    border-radius: 50%;
+                    background: $color-error;
+                    font-family: 'Font Awesome';
+                    font-size: 10px;
+                    font-weight: normal;
+                    text-align: center;
+                    color: $color-white;
+                }
+
+                &.icon-friends:after {
+                    top: 22px;
+                    left: 70px;
+                }
+
+                &.icon-games:after {
+                    top: 22px;
+                    left: 63px;
+                }
+            }
+        }
+    }
+
+    &--selected {
+        a {
+            background: $color-background;
+        }
+    }   
+
+    &--expanded {
+        display: flex;
+        z-index: 100;
+    }
+
+    @include responsive-tablet {
+        display: flex;
+    }
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    bottom: 0;
+    background: $color-white;
+    opacity: 0.8;
+
+    @include responsive-tablet {
+        display: none;
+    }
+}
+
+.logo {
+    display: block;
+    margin: $margin auto $margin auto;
+}

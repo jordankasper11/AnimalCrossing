@@ -27,12 +27,13 @@ export class Game {
     public correctGuesses: number;
     public wrongGuesses: number;
     public skips: number;
+    public remaining: number;
     public currentVillager: CurrentVillager;
     public options: Array<VillagerOption>;
 }
 
 export class GuessRequest {
-    constructor(public gameId: string, public name: string) {        
+    constructor(public gameId: string, public name: string) {
     }
 }
 
@@ -42,6 +43,6 @@ export class GuessResponse {
 }
 
 export class SkipRequest {
-    constructor(public gameId: string){        
+    constructor(public gameId: string) {
     }
 }

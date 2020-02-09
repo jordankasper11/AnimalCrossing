@@ -1,40 +1,47 @@
-<div *ngIf="game">
-    <div *ngIf="game.currentVillager">
-        <img [src]="game.currentVillager.houseImageUrl" alt="" />
-        <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
-            <div *ngIf="game.mode == GameMode.Guess">
-                <input type="text" id="name" formControlName="name" />
-                <button type="submit">Guess</button>
+<img src="/assets/animal-crossing-logo.png" alt="Animal Crossing" class="logo" />
+<h1>House Test</h1>
+<main *ngIf="game">
+    <img [src]="game.currentVillager?.houseImageUrl" alt="" class="house" />
+    <div class="container">
+        <div *ngIf="!game.completed">
+            <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
+                <div *ngIf="game.mode == GameMode.Guess">
+                    <input type="text" id="name" formControlName="name" />
+                    <button type="submit">Guess</button>
+                </div>
+                <div *ngIf="game.mode == GameMode.MultipleChoice">
+                    <ul>
+                        <li *ngFor="let option of game.options">
+                            <input type="radio" [id]="option.id" name="name" formControlName="name"
+                                [value]="option.name" [attr.disabled]="!option.available ? true : null" />
+                            <label [for]="option.id">{{ option.name }}</label>
+                        </li>
+                    </ul>
+                </div>
+                <button type="button" (click)="skip()">Skip</button>
+            </form>
+        </div>
+        <div class="statistics">
+            <div class="counter">
+                <span class="counter__number">{{ game.remaining }}</span>
+                <span class="counter__label">Remaining Villagers</span>
             </div>
-            <div *ngIf="game.mode == GameMode.MultipleChoice">
-                <ul>
-                    <li *ngFor="let option of game.options">
-                        <input type="radio" [id]="option.id" name="name" formControlName="name" [value]="option.name"
-                            [attr.disabled]="!option.available ? true : null" />
-                        <label [for]="option.id">{{ option.name }}</label>
-                    </li>
-                </ul>
+            <div class="counter">
+                <span class="counter__number">{{ game.correctGuesses }}</span>
+                <span class="counter__label">Correct Guesses</span>
             </div>
-            <button type="button" (click)="skip()">Skip</button>
-        </form>
+            <div class="counter">
+                <span class="counter__number">{{ game.wrongGuesses }}</span>
+                <span class="counter__label">Wrong Guesses</span>
+            </div>
+            <div class="counter">
+                <span class="counter__number">{{ game.skips }}</span>
+                <span class="counter__label">Skips</span>
+            </div>
+        </div>
+        <div *ngIf="game.completed" class="game-completed">
+            <p>Game Over</p>
+        </div>
         <button type="button" (click)="newGame()">New Game</button>
     </div>
-    <div>
-        <div>
-            <span>{{ game.correctGuesses }}</span>
-            <span>Correct Guesses</span>
-        </div>
-        <div>
-            <span>{{ game.wrongGuesses }}</span>
-            <span>Wrong Guesses</span>
-        </div>
-        <div>
-            <span>{{ game.skips }}</span>
-            <span>Skips</span>
-        </div>
-        <div>
-            <span>{{ game.remaining }}</span>
-            <span>Remaining Villagers</span>
-        </div>
-    </div>
-</div>
+</main>

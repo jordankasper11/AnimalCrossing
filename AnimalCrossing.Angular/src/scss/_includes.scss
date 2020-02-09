@@ -1,0 +1,38 @@
+$color-blue: #0096cbe6;
+$color-blue-light: #8bdbeb;
+$color-brown: #834b16;
+$color-green: #a2efb9;
+$color-white: #faf0e8;
+$color-primary: $color-blue;
+$color-primary-light: $color-blue-light;
+$color-secondary: $color-green;
+
+$color-background: linear-gradient(to bottom, $color-blue-light 0%, $color-white 600px);
+$color-text: $color-blue;
+
+$border-radius: 10px;
+
+$font-primary: 'Open Sans', Arial, sans-serif;
+
+$opacity-disabled: 0.6;
+
+$margin: 40px;
+$padding: 20px;
+
+@mixin responsive-mobile() {
+    @media (min-width: 480px) {
+        @content;
+    }
+}
+
+@mixin responsive-tablet() {
+    @media (min-width: 768px) {
+        @content;
+    }
+}
+
+@mixin responsive-desktop() {
+    @media (min-width: 990px) {
+        @content;
+    }
+}
