@@ -14,6 +14,17 @@ namespace AnimalCrossing.Web.Entities
 
         public string Url { get; set; }
 
+        public string HouseImageUrl
+        {
+            get
+            {
+                if (!String.IsNullOrWhiteSpace(this.HouseFileName))
+                    return $"/images/houses/{this.HouseFileName}";
+
+                return null;
+            }
+        }
+
         public string HouseFileName { get; set; }
 
         public Villager()

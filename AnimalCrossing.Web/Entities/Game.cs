@@ -46,7 +46,7 @@ namespace AnimalCrossing.Web.Entities
         public CurrentVillager(Villager villager)
         {
             this.Id = villager.Id;
-            this.HouseImageUrl = $"/images/houses/{villager.HouseFileName}";
+            this.HouseImageUrl = villager.HouseImageUrl;
         }
     }
 
@@ -99,12 +99,22 @@ namespace AnimalCrossing.Web.Entities
             }
         }
 
+        public Villager PreviousVillager
+        {
+            get
+            {
+                return this.CompletedVillagers?.FirstOrDefault();
+            }
+        }
+
         public CurrentVillager CurrentVillager
         {
             get
             {
-                if (this.RemainingVillagers?.FirstOrDefault() != null)
-                    return new CurrentVillager(this.RemainingVillagers.First());
+                var villager = this.RemainingVillagers?.FirstOrDefault();
+                
+                if (villager != null)
+                    return new CurrentVillager(villager);
 
                 return null;
             }
@@ -148,7 +158,7 @@ namespace AnimalCrossing.Web.Entities
                 .OrderBy(v => Guid.NewGuid())
                 .ToDictionary(v => v, v => false);
 
-            MoveToNextVillager();
+            SetOptions();
         }
 
         public bool Guess(string name)

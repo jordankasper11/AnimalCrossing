@@ -42,6 +42,14 @@ img {
     }
 }
 
+a {
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 form {
     margin: 0 0 $margin 0;
 
@@ -170,6 +178,22 @@ button {
     &__label {
         font-weight: 600;
         line-height: 1;
+    }
+}
+
+.previous-villager {
+    display: block;
+    margin: 0 0 $margin 0;
+    width: 100%;
+    border-radius: $border-radius;
+    padding: $padding;
+    background: $color-primary-light;
+    text-align: center;
+
+    span {
+        display: inline-block;
+        margin-right: 5px;
+        font-weight: 600;
     }
 }
 
