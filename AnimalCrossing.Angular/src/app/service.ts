@@ -29,7 +29,7 @@ export class GameService {
     }
 
     skip(request: SkipRequest): Observable<Game> {
-        const requestUrl = '/api/Game/Guess';
+        const requestUrl = '/api/Game/Skip';
 
         return this.httpClient.post<Game>(requestUrl, request);
     }

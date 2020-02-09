@@ -17,13 +17,15 @@ export class AppComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
-        await this.newGame();
+        const storedValue = localStorage.getItem('GameMode');
+        const mode = storedValue ? GameMode[storedValue] : GameMode.Guess;
+
+        await this.newGame(mode);
     }
 
     buildForm(game: Game): FormGroup {
         if (!game.completed) {
             const form = new FormGroup({
-                id: new FormControl(game.id, Validators.required),
                 name: new FormControl(null, Validators.required)
             });
 
@@ -45,17 +47,19 @@ export class AppComponent implements OnInit {
 
     async submit(): Promise<void> {
         if (this.form.valid) {
-            const request = new GuessRequest(this.form.value.id, this.form.value.name);
+            const request = new GuessRequest(this.game.id, this.form.value.name);
             const response = await this.gameService.guess(request).toPromise();
 
             this.bindGame(response.game);
         }
     }
 
-    async newGame(): Promise<void> {
+    async newGame(mode: GameMode): Promise<void> {
         this.game = null;
 
-        const game = await this.gameService.create(GameMode.MultipleChoice).toPromise();
+        localStorage.setItem('GameMode', mode.toString());
+
+        const game = await this.gameService.create(mode).toPromise();
 
         this.bindGame(game);
     }

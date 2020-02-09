@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -113,25 +114,27 @@ namespace AnimalCrossing.Web.Entities
 
         private Dictionary<Villager, bool> Villagers { get; set; }
 
-        private List<Villager> RemainingVillagers
+        private ReadOnlyCollection<Villager> RemainingVillagers
         {
             get
             {
                 return this.Villagers
                     .Where(v => !v.Value)
                     .Select(v => v.Key)
-                    .ToList();
+                    .ToList()
+                    .AsReadOnly();
             }
         }
 
-        private List<Villager> CompletedVillagers
+        private ReadOnlyCollection<Villager> CompletedVillagers
         {
             get
             {
                 return this.Villagers
                     .Where(v => v.Value)
                     .Select(v => v.Key)
-                    .ToList();
+                    .ToList()
+                    .AsReadOnly();
             }
         }
 
@@ -200,8 +203,7 @@ namespace AnimalCrossing.Web.Entities
         {
             var villager = this.RemainingVillagers.First();
 
-            this.RemainingVillagers.Remove(villager);
-            this.CompletedVillagers.Add(villager);
+            this.Villagers[villager] = true;
         }
 
         private void SetOptions()

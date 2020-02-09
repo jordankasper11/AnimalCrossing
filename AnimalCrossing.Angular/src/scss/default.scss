@@ -7,7 +7,7 @@ body {
     background: url('../assets/background-water.png') repeat-x left bottom, $color-background;
     color: $color-text;
     font-family: $font-primary;
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
 }
 
@@ -20,6 +20,14 @@ h1 {
     margin: 0 0 $margin 0;
     font-family: 'Fink';
     font-size: 72px;
+    text-align: center;
+    color: $color-brown;
+}
+
+h2 {
+    margin: 0 0 $margin 0;
+    font-family: 'Fink';
+    font-size: 36px;
     text-align: center;
     color: $color-brown;
 }
@@ -37,12 +45,37 @@ img {
 form {
     margin: 0 0 $margin 0;
 
+    input[type='text'] {
+        display: block;
+        margin: 0 0 $padding 0;
+        outline: none;
+        width: 100%;
+        border: none;
+        border-bottom: dotted 5px $color-primary-light;
+        padding: $padding 0;
+        background: none;
+        font-family: $font-primary;
+        font-size: 18px;
+        line-height: 1;
+        color: $color-text;
+
+        &:focus {
+            border-bottom-style: solid;
+            border-bottom-color: $color-primary;
+        }
+    }
+
+    ::placeholder {
+        color: $color-primary-light;
+    }
+
     input[type='radio'] {
         display: none;
 
         + label {
             display: block;
             margin: 0 0 $padding 0;
+            box-shadow: 4px 5px 4px -1px rgba(0, 0, 0, 0.29);
             border-radius: $border-radius;
             padding: $padding;
             background: $color-primary;
@@ -51,11 +84,13 @@ form {
             cursor: pointer;
 
             &:hover {
+                box-shadow: none;;
                 background: $color-primary-light;
             }
         }
 
         &[disabled] + label {
+            box-shadow: none;
             opacity: $opacity-disabled;
             cursor: no-drop;
 
@@ -64,13 +99,18 @@ form {
             }
         }
     }
+
+    ul {
+        margin: 0 0 $margin 0;
+    }
 }
 
 button {
     display: block;
-    margin: 0 0 $padding 0;
+    margin: 0 0 $margin 0;
     width: 100%;
     outline: none;
+    box-shadow: 4px 5px 4px -1px rgba(0, 0, 0, 0.29);
     border-radius: $border-radius;
     border: none;
     padding: 1.5 * $padding;
@@ -81,15 +121,28 @@ button {
     color: $color-white;
     text-align: center;
     cursor: pointer;
+
+    &[disabled] {
+        opacity: $opacity-disabled;
+        box-shadow: none;
+        cursor: no-drop;
+    }
+
+    &:not([disabled]):hover {
+        box-shadow: none;
+        background: $color-primary-light;
+    }
 }
 
 .logo {
     margin: 0 auto $padding auto;
     padding: $padding;
-    width: 400px;
+    width: 300px;
 }
 
 .container {
+    display: flex;
+    flex-direction: column;
     padding: $padding;
 }
 
@@ -103,20 +156,20 @@ button {
     border-radius: $border-radius;
     padding: $padding;
     background: $color-secondary;
-    line-height: 1;
     color: $color-primary;
     text-align: center;
 
     &__number {
         display: block;
-        margin: 0 0 $padding 0;
+        margin: 0 0 10px 0;
         font-family: 'Fink';
-        font-size: 28px;
-        font-weight: 600;
+        font-size: 32px;
+        font-weight: 700;
     }
 
     &__label {
-        font-size: 18px;
+        font-weight: 600;
+        line-height: 1;
     }
 }
 
@@ -133,15 +186,24 @@ button {
 }
 
 @include responsive-tablet {
-    body {
-        padding-left: 120px;
-    }
-
     main {
         padding: $padding;
 
         .container {
             padding: 0;
         }
+    }
+
+    .container {
+        flex-direction: row;
+    }
+
+    .statistics {
+        width: 30%;
+    }
+
+    .game {
+        flex-grow: 1;
+        padding-right: $margin;
     }
 }

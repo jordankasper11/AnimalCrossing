@@ -3,45 +3,50 @@
 <main *ngIf="game">
     <img [src]="game.currentVillager?.houseImageUrl" alt="" class="house" />
     <div class="container">
-        <div *ngIf="!game.completed">
-            <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
-                <div *ngIf="game.mode == GameMode.Guess">
-                    <input type="text" id="name" formControlName="name" />
-                    <button type="submit">Guess</button>
-                </div>
-                <div *ngIf="game.mode == GameMode.MultipleChoice">
-                    <ul>
-                        <li *ngFor="let option of game.options">
-                            <input type="radio" [id]="option.id" name="name" formControlName="name"
-                                [value]="option.name" [attr.disabled]="!option.available ? true : null" />
-                            <label [for]="option.id">{{ option.name }}</label>
-                        </li>
-                    </ul>
-                </div>
-                <button type="button" (click)="skip()">Skip</button>
-            </form>
+        <div class="game">
+            <div *ngIf="!game.completed">
+                <h2>Which villager lives here?</h2>
+                <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
+                    <div *ngIf="game.mode == GameMode.Guess">
+                        <input type="text" id="name" formControlName="name" placeholder="Enter name here" autofocus autocomplete="off" />
+                        <button type="submit" [attr.disabled]="!form.valid ? true : null">Guess</button>
+                    </div>
+                    <div *ngIf="game.mode == GameMode.MultipleChoice">
+                        <ul>
+                            <li *ngFor="let option of game.options">
+                                <input type="radio" [id]="option.id" name="name" formControlName="name"
+                                    [value]="option.name" [attr.disabled]="!option.available ? true : null" />
+                                <label [for]="option.id">{{ option.name }}</label>
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="button" (click)="skip()">Skip</button>
+                </form>
+            </div>
+            <div *ngIf="game.completed" class="game-completed">
+                <p>Game Over</p>
+            </div>
+            <button type="button" (click)="newGame(game.mode)">New Game</button>
+            <button *ngIf="game.mode == GameMode.Guess" type="button" (click)="newGame(GameMode.MultipleChoice)">Switch to Easy Mode</button>
+            <button *ngIf="game.mode == GameMode.MultipleChoice" type="button" (click)="newGame(GameMode.Guess)">Switch to Hard Mode</button>
         </div>
         <div class="statistics">
             <div class="counter">
-                <span class="counter__number">{{ game.remaining }}</span>
+                <span class="counter__number">{{ game.remaining | number }}</span>
                 <span class="counter__label">Remaining Villagers</span>
             </div>
             <div class="counter">
-                <span class="counter__number">{{ game.correctGuesses }}</span>
+                <span class="counter__number">{{ game.correctGuesses | number }}</span>
                 <span class="counter__label">Correct Guesses</span>
             </div>
             <div class="counter">
-                <span class="counter__number">{{ game.wrongGuesses }}</span>
+                <span class="counter__number">{{ game.wrongGuesses | number }}</span>
                 <span class="counter__label">Wrong Guesses</span>
             </div>
             <div class="counter">
-                <span class="counter__number">{{ game.skips }}</span>
+                <span class="counter__number">{{ game.skips | number }}</span>
                 <span class="counter__label">Skips</span>
             </div>
         </div>
-        <div *ngIf="game.completed" class="game-completed">
-            <p>Game Over</p>
-        </div>
-        <button type="button" (click)="newGame()">New Game</button>
     </div>
 </main>
