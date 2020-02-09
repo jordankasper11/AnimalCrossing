@@ -12,7 +12,6 @@ export class CurrentVillager {
 export class VillagerOption {
     public id: string;
     public name: string;
-    public available: boolean;
 }
 
 export enum GameMode {

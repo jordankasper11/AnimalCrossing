@@ -56,18 +56,10 @@ namespace AnimalCrossing.Web.Entities
 
         public string Name { get; private set; }
 
-        public bool Available { get; private set; }
-
         public VillagerOption(Villager villager)
         {
             this.Id = villager.Id;
             this.Name = villager.Name;
-            this.Available = true;
-        }
-
-        public void SetAsUnvailable()
-        {
-            this.Available = false;
         }
     }
 
@@ -103,7 +95,7 @@ namespace AnimalCrossing.Web.Entities
         {
             get
             {
-                return this.CompletedVillagers?.FirstOrDefault();
+                return this.CompletedVillagers?.LastOrDefault();
             }
         }
 
@@ -167,30 +159,21 @@ namespace AnimalCrossing.Web.Entities
 
             EnsureGameNotCompleted();
 
-            var villager = this.RemainingVillagers.First();
+            var success = false;
+            var villager = this.RemainingVillagers.First();            
 
             if (name.Equals(villager.Name, StringComparison.OrdinalIgnoreCase))
             {
                 this.CorrectGuesses++;
 
-                MoveToNextVillager();
-
-                return true;
+                success = true;
             }
             else
-            {
                 this.WrongGuesses++;
 
-                if (this.Options?.Any() == true)
-                {
-                    var option = this.Options.FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            MoveToNextVillager();
 
-                    if (option != null)
-                        option.SetAsUnvailable();
-                }
-
-                return false;
-            }
+            return success;
         }
 
         public void Skip()

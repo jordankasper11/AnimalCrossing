@@ -21,7 +21,7 @@
                         <ul>
                             <li *ngFor="let option of game.options">
                                 <input type="radio" [id]="option.id" name="name" formControlName="name"
-                                    [value]="option.name" [attr.disabled]="!option.available ? true : null" />
+                                    [value]="option.name" />
                                 <label [for]="option.id">{{ option.name }}</label>
                             </li>
                         </ul>

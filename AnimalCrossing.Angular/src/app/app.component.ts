@@ -55,8 +55,6 @@ export class AppComponent implements OnInit {
     }
 
     async newGame(mode: GameMode): Promise<void> {
-        this.game = null;
-
         localStorage.setItem('GameMode', mode.toString());
 
         const game = await this.gameService.create(mode).toPromise();
@@ -67,5 +65,7 @@ export class AppComponent implements OnInit {
     private bindGame(game: Game): void {
         this.form = this.buildForm(game);
         this.game = game;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
