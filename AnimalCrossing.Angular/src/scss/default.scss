@@ -185,6 +185,15 @@ button {
     }
 }
 
+footer {
+    position: relative;
+    top: 170px;
+    opacity: $opacity-disabled;
+    font-size: 14px;
+    text-align: center;
+    color: $color-white;
+}
+
 @include responsive-tablet {
     main {
         padding: $padding;
