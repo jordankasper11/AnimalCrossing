@@ -211,6 +211,7 @@ namespace AnimalCrossing.Web.Entities
             if (this.Mode == GameMode.MultipleChoice && this.RemainingVillagers?.Any() == true)
             {
                 var villagers = this.Villagers.Keys
+                    .Where(v => v != this.RemainingVillagers.First())
                     .OrderBy(v => Guid.NewGuid())
                     .Take(9)
                     .ToList();
