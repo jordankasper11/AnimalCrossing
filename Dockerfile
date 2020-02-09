@@ -6,7 +6,7 @@ COPY AnimalCrossing.Angular/package*.json ./
 RUN npm install
 
 COPY ./AnimalCrossing.Angular/. .
-RUN npm run ng build  -- --prod --verbose
+RUN npm run ng build -- --prod
 
 # Compile ASP.NET Core
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS dotnetcore-build
