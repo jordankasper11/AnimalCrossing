@@ -104,7 +104,7 @@ namespace AnimalCrossing.Web.Entities
             get
             {
                 var villager = this.RemainingVillagers?.FirstOrDefault();
-                
+
                 if (villager != null)
                     return new CurrentVillager(villager);
 
@@ -160,7 +160,7 @@ namespace AnimalCrossing.Web.Entities
             EnsureGameNotCompleted();
 
             var success = false;
-            var villager = this.RemainingVillagers.First();            
+            var villager = this.RemainingVillagers.First();
 
             if (name.Equals(villager.Name, StringComparison.OrdinalIgnoreCase))
             {
@@ -171,7 +171,8 @@ namespace AnimalCrossing.Web.Entities
             else
                 this.WrongGuesses++;
 
-            MoveToNextVillager();
+            if (this.Mode == GameMode.MultipleChoice)
+                MoveToNextVillager();
 
             return success;
         }
