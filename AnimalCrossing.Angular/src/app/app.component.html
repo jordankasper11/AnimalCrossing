@@ -1,7 +1,7 @@
 <img src="/assets/animal-crossing-logo.png" alt="Animal Crossing" class="logo" />
 <h1>House Test</h1>
 <main *ngIf="game">
-    <img [src]="game.currentVillager?.houseImageUrl" alt="" class="house" />
+    <img *ngIf="game.currentVillager?.houseImageUrl" [src]="game.currentVillager.houseImageUrl" alt="" class="house" />
     <div class="container">
         <div class="game">
             <div *ngIf="!game.completed">
