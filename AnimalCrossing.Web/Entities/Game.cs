@@ -148,7 +148,7 @@ namespace AnimalCrossing.Web.Entities
                 .OrderBy(v => Guid.NewGuid())
                 .ToDictionary(v => v, v => false);
 
-            SetOptions();
+            MoveToNextVillager();
         }
 
         public bool Guess(string name)
@@ -164,7 +164,6 @@ namespace AnimalCrossing.Web.Entities
                 this.CorrectGuesses++;
 
                 MoveToNextVillager();
-                SetOptions();
 
                 return true;
             }
@@ -204,6 +203,8 @@ namespace AnimalCrossing.Web.Entities
             var villager = this.RemainingVillagers.First();
 
             this.Villagers[villager] = true;
+
+            SetOptions();
         }
 
         private void SetOptions()
