@@ -27,6 +27,7 @@ export class Game {
     public wrongGuesses: number;
     public skips: number;
     public remaining: number;
+    public previousVillager: Villager;
     public currentVillager: CurrentVillager;
     public options: Array<VillagerOption>;
 }
