@@ -171,7 +171,7 @@ namespace AnimalCrossing.Web.Entities
             else
                 this.WrongGuesses++;
 
-            if (this.Mode == GameMode.MultipleChoice)
+            if (success || this.Mode == GameMode.MultipleChoice)
                 MoveToNextVillager();
 
             return success;
