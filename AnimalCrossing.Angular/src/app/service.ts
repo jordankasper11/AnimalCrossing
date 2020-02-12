@@ -10,8 +10,11 @@ export class GameService {
     constructor(private httpClient: HttpClient) {
     }
 
-    create(mode: GameMode) {
-        const requestUrl = `/api/Game?mode=${mode}`;
+    create(mode: GameMode, previousGameId?: string) {
+        let requestUrl = `/api/Game?mode=${mode}`;
+
+        if (previousGameId)
+            requestUrl += `&previousGameId=${previousGameId}`;
 
         return this.httpClient.get<Game>(requestUrl);
     }

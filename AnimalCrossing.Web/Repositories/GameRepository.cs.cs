@@ -1,4 +1,6 @@
-﻿using AnimalCrossing.Web.Entities;
+﻿using AnimalCrossing.Web.Caching;
+using AnimalCrossing.Web.Entities;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -12,29 +14,48 @@ namespace AnimalCrossing.Web.Repositories
 {
     public class GameRepository
     {
-        private IMemoryCache _cache;
+        private VillagerRepository VillagerRepository { get; set; }
 
-        public GameRepository(IMemoryCache cache)
+        private CacheManager CacheManager { get; set; }
+
+        public GameRepository(VillagerRepository villagerRepository, CacheManager cacheManager)
         {
-            _cache = cache;
+            this.VillagerRepository = villagerRepository;
+            CacheManager = cacheManager;
         }
 
-        public Game Create(GameMode gameMode, IEnumerable<Villager> villagers)
+        public async Task<Game> Create(GameMode gameMode)
         {
-            var game = new Game(gameMode, villagers);
-            var cacheKey = GetCacheKey(game.Id);
+            var firstVillagerId = this.VillagerRepository.Villagers.OrderBy(v => Guid.NewGuid()).First().Id;
+            var gameData = new GameData(gameMode, firstVillagerId);
+            var game = new Game(gameData, this.VillagerRepository.Villagers);
 
-            _cache.Set(cacheKey, game, new MemoryCacheEntryOptions() { SlidingExpiration = new TimeSpan(2, 0, 0, 0) });
+            await Save(game);
 
             return game;
         }
 
-        public Game Get(Guid id)
+        public async Task<Game> Get(Guid id)
         {
             var cacheKey = GetCacheKey(id);
-            var game = _cache.Get<Game>(cacheKey);
+            var gameData = await this.CacheManager.Get<GameData>(cacheKey);
 
-            return game;
+            return new Game(gameData, this.VillagerRepository.Villagers);
+        }
+
+        public async Task Save(Game game)
+        {
+            var gameData = game.GameData;
+            var cacheKey = GetCacheKey(gameData.Id);
+
+            await CacheManager.Set(cacheKey, gameData, slidingExpiration: TimeSpan.FromHours(3));
+        }
+
+        public async Task Remove(Guid gameId)
+        {
+            var cacheKey = GetCacheKey(gameId);
+
+            await CacheManager.Remove(cacheKey);
         }
 
         private string GetCacheKey(Guid id)

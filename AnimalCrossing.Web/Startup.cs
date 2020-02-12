@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AnimalCrossing.Web.Caching;
 using AnimalCrossing.Web.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,16 +17,34 @@ namespace AnimalCrossing.Web
 {
     public class Startup
     {
+        private IWebHostEnvironment _env;
+
+        public Startup(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache();
+            if (_env.IsDevelopment())
+                services.AddDistributedMemoryCache();
+            else
+            {
+                services.AddDistributedRedisCache(options =>
+                {
+                    options.Configuration = Environment.GetEnvironmentVariable("RedisUrl") ?? throw new ArgumentNullException("RedisUrl");
+                    options.InstanceName = "AnimalCrossing|";
+                });
+            }
+
+            services.AddTransient<CacheManager>();
 
             services.AddSingleton<VillagerRepository>(serviceProvider =>
             {
                 return new VillagerRepository(Path.Combine(Directory.GetCurrentDirectory(), "data", "villagers.json"));
             });
 
-            services.AddSingleton<GameRepository>();
+            services.AddTransient<GameRepository>();
             services.AddControllers();
             services.AddSpaStaticFiles(configuration => configuration.RootPath = "wwwroot");
         }

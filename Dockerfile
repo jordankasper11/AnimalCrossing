@@ -1,33 +1,30 @@
-# Compile Angular app with CLI
 FROM node:13 as node-build
 WORKDIR /usr/src/app
-
 COPY AnimalCrossing.Angular/package*.json ./
 RUN npm install
-
 COPY ./AnimalCrossing.Angular/. .
 RUN npm run ng build -- --prod
 
-# Compile ASP.NET Core
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS dotnetcore-build
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-bionic AS base
 WORKDIR /app
+EXPOSE 80
 
-# Copy csproj files and restore NuGet packages
-COPY *.sln ./
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-bionic AS dotnet-build
+WORKDIR /src
+COPY AnimalCrossing.sln ./
 COPY AnimalCrossing.Web/*.csproj ./AnimalCrossing.Web/
 COPY AnimalCrossing.Web.Tests/*.csproj ./AnimalCrossing.Web.Tests/
 RUN dotnet restore
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "AnimalCrossing.sln" -c Release -o /app/build
 
-# Copy remaining code files and build
-COPY ./AnimalCrossing.Web/ ./AnimalCrossing.Web/
-COPY ./AnimalCrossing.Web.Tests/ ./AnimalCrossing.Web.Tests/
-RUN dotnet publish -c Release -o out
+FROM dotnet-build AS dotnet-publish
+RUN dotnet publish "AnimalCrossing.sln" -c Release -o /app/publish
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM base AS final
 WORKDIR /app
-EXPOSE 80
-COPY --from=dotnetcore-build /app/out .
-COPY --from=node-build /usr/src/app/dist/AnimalCrossingAngular/ ./wwwroot/.
 COPY ./AnimalCrossing.Web/images/ ./images/
+COPY --from=dotnet-publish /app/publish .
+COPY --from=node-build /usr/src/app/dist/AnimalCrossingAngular/ ./wwwroot/.
 ENTRYPOINT ["dotnet", "AnimalCrossing.Web.dll"]

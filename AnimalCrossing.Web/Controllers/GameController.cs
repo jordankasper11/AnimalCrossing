@@ -11,27 +11,28 @@ namespace AnimalCrossing.Web.Controllers
     [Route("api/Game")]
     public class GameController : Controller
     {
-        private readonly GameRepository _gameRepository;
-        private readonly VillagerRepository _villagerRepository;
+        private GameRepository GameRepository { get; set; }
 
-        public GameController(GameRepository gameRepository, VillagerRepository villagerRepository)
+        public GameController(GameRepository gameRepository)
         {
-            _gameRepository = gameRepository;
-            _villagerRepository = villagerRepository;
+            this.GameRepository = gameRepository;
         }
 
         [HttpGet]
-        public ActionResult<Game> Create([FromQuery]GameMode mode)
+        public async Task<ActionResult<Game>> Create([FromQuery]GameMode mode, [FromQuery]Guid? previousGameId = null)
         {
-            var game = _gameRepository.Create(mode, _villagerRepository.Villagers);
+            var game = await GameRepository.Create(mode);
+
+            if (previousGameId != null)
+                await GameRepository.Remove(previousGameId.Value);
 
             return Ok(game);
         }
 
         [HttpGet("{id:guid}")]
-        public ActionResult<Game> Get(Guid id)
+        public async Task<ActionResult<Game>> Get(Guid id)
         {
-            var game = _gameRepository.Get(id);
+            var game = await GameRepository.Get(id);
 
             if (game != null)
                 return Ok(game);
@@ -40,14 +41,16 @@ namespace AnimalCrossing.Web.Controllers
         }
 
         [HttpPost("Guess")]
-        public ActionResult<GuessResponse> Guess([FromBody]GuessRequest guessRequest)
+        public async Task<ActionResult<GuessResponse>> Guess([FromBody]GuessRequest guessRequest)
         {
-            var game = _gameRepository.Get(guessRequest.GameId);
+            var game = await GameRepository.Get(guessRequest.GameId);
 
             if (game != null)
             {
                 var success = game.Guess(guessRequest.Name);
                 var guessResponse = new GuessResponse(game, success);
+
+                await GameRepository.Save(game);
 
                 return Ok(guessResponse);
             }
@@ -56,13 +59,15 @@ namespace AnimalCrossing.Web.Controllers
         }
 
         [HttpPost("Skip")]
-        public ActionResult<Game> Skip([FromBody]SkipRequest skipRequest)
+        public async Task<ActionResult<Game>> Skip([FromBody]SkipRequest skipRequest)
         {
-            var game = _gameRepository.Get(skipRequest.GameId);
+            var game = await GameRepository.Get(skipRequest.GameId);
 
             if (game != null)
             {
                 game.Skip();
+
+                await GameRepository.Save(game);
 
                 return Ok(game);
             }

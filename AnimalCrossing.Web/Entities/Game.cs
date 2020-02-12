@@ -12,31 +12,6 @@ namespace AnimalCrossing.Web.Entities
         MultipleChoice
     }
 
-    public class GuessRequest
-    {
-        public Guid GameId { get; set; }
-
-        public string Name { get; set; }
-    }
-
-    public class GuessResponse
-    {
-        public Game Game { get; set; }
-
-        public bool Success { get; set; }
-
-        public GuessResponse(Game game, bool success)
-        {
-            this.Game = game;
-            this.Success = success;
-        }
-    }
-
-    public class SkipRequest
-    {
-        public Guid GameId { get; set; }
-    }
-
     public class CurrentVillager
     {
         public Guid Id { get; private set; }
@@ -65,64 +40,60 @@ namespace AnimalCrossing.Web.Entities
 
     public class Game
     {
-        public Guid Id { get; set; }
+        public Guid Id => this.GameData.Id;
 
-        public GameMode Mode { get; set; }
+        public GameMode Mode => this.GameData.Mode;
 
-        public bool Completed
+        public bool Completed => !this.RemainingVillagers.Any();
+
+        public int CorrectGuesses => this.GameData.CorrectGuesses;
+
+        public int WrongGuesses => this.GameData.WrongGuesses;
+
+        public int Skips => this.GameData.Skips;
+
+        public int Remaining => this.RemainingVillagers.Count;
+
+        public Villager PreviousVillager => this.GameData.CompletedVillagerIds?.Any() == true ? this.Villagers.First(v => v.Id == this.GameData.CompletedVillagerIds.Last()) : null;
+
+        public CurrentVillager CurrentVillager => this.GameData.CurrentVillagerId != null ? new CurrentVillager(this.Villagers.First(v => v.Id == this.GameData.CurrentVillagerId.Value)) : null;
+
+        public List<VillagerOption> Options
         {
             get
             {
-                return !this.RemainingVillagers.Any();
-            }
-        }
+                if (!this.Completed && this.Mode == GameMode.MultipleChoice)
+                {
+                    var villagers = this.Villagers
+                        .Where(v => v.Id != this.GameData.CurrentVillagerId.Value)
+                        .OrderBy(v => Guid.NewGuid())
+                        .Take(9)
+                        .ToList();
 
-        public int CorrectGuesses { get; private set; }
+                    var currentVillager = this.Villagers.First(v => v.Id == this.GameData.CurrentVillagerId.Value);
 
-        public int WrongGuesses { get; private set; }
+                    villagers.Add(currentVillager);
 
-        public int Skips { get; private set; }
-
-        public int Remaining
-        {
-            get
-            {
-                return this.RemainingVillagers.Count;
-            }
-        }
-
-        public Villager PreviousVillager
-        {
-            get
-            {
-                return this.CompletedVillagers?.LastOrDefault();
-            }
-        }
-
-        public CurrentVillager CurrentVillager
-        {
-            get
-            {
-                var villager = this.RemainingVillagers?.FirstOrDefault();
-
-                if (villager != null)
-                    return new CurrentVillager(villager);
+                    return villagers
+                        .OrderBy(v => v.Name)
+                        .Select(v => new VillagerOption(v))
+                        .ToList();
+                }
 
                 return null;
             }
         }
 
-        public List<VillagerOption> Options { get; private set; }
+        internal GameData GameData { get; private set; }
 
-        private Dictionary<Villager, bool> Villagers { get; set; }
+        private List<Villager> Villagers { get; set; }
 
         private ReadOnlyCollection<Villager> RemainingVillagers
         {
             get
             {
                 return this.Villagers
-                    .Where(v => !v.Value)
-                    .Select(v => v.Key)
+                    .Where(v => !this.GameData.CompletedVillagerIds.Contains(v.Id))
                     .ToList()
                     .AsReadOnly();
             }
@@ -133,43 +104,35 @@ namespace AnimalCrossing.Web.Entities
             get
             {
                 return this.Villagers
-                    .Where(v => v.Value)
-                    .Select(v => v.Key)
+                    .Where(v => this.GameData.CompletedVillagerIds.Contains(v.Id))
                     .ToList()
                     .AsReadOnly();
             }
         }
 
-        public Game(GameMode gameMode, IEnumerable<Villager> villagers)
+        public Game(GameData gameData, IEnumerable<Villager> villagers)
         {
-            this.Id = Guid.NewGuid();
-            this.Mode = gameMode;
-
-            this.Villagers = villagers
-                .Select(v => (Villager)v.Clone())
-                .OrderBy(v => Guid.NewGuid())
-                .ToDictionary(v => v, v => false);
-
-            SetOptions();
+            this.GameData = gameData;
+            this.Villagers = villagers.ToList();
         }
 
         public bool Guess(string name)
         {
-            name = name.Trim();
-
             EnsureGameNotCompleted();
 
+            name = name.Trim();
+
             var success = false;
-            var villager = this.RemainingVillagers.First();
+            var villager = this.Villagers.First(v => v.Id == this.GameData.CurrentVillagerId);
 
             if (name.Equals(villager.Name, StringComparison.OrdinalIgnoreCase))
             {
-                this.CorrectGuesses++;
+                this.GameData.CorrectGuesses++;
 
                 success = true;
             }
             else
-                this.WrongGuesses++;
+                this.GameData.WrongGuesses++;
 
             if (success || this.Mode == GameMode.MultipleChoice)
                 MoveToNextVillager();
@@ -181,7 +144,7 @@ namespace AnimalCrossing.Web.Entities
         {
             EnsureGameNotCompleted();
 
-            this.Skips++;
+            this.GameData.Skips++;
 
             MoveToNextVillager();
         }
@@ -194,32 +157,37 @@ namespace AnimalCrossing.Web.Entities
 
         private void MoveToNextVillager()
         {
-            var villager = this.RemainingVillagers.First();
+            this.GameData.CompletedVillagerIds.Add(this.CurrentVillager.Id);
+            this.GameData.CurrentVillagerId = this.RemainingVillagers.OrderBy(v => Guid.NewGuid()).FirstOrDefault()?.Id;
+        }
+    }
 
-            this.Villagers[villager] = true;
+    public class GameData
+    {
+        public Guid Id { get; set; }
 
-            SetOptions();
+        public GameMode Mode { get; set; }
+
+        public Guid? CurrentVillagerId { get; set; }
+
+        public List<Guid> CompletedVillagerIds { get; set; }
+
+        public int CorrectGuesses { get; set; }
+
+        public int WrongGuesses { get; set; }
+
+        public int Skips { get; set; }
+
+        public GameData()
+        {
+            this.Id = Guid.NewGuid();
+            this.CompletedVillagerIds = new List<Guid>();
         }
 
-        private void SetOptions()
+        public GameData(GameMode mode, Guid currentVillagerId) : this()
         {
-            if (this.Mode == GameMode.MultipleChoice && this.RemainingVillagers?.Any() == true)
-            {
-                var villagers = this.Villagers.Keys
-                    .Where(v => v != this.RemainingVillagers.First())
-                    .OrderBy(v => Guid.NewGuid())
-                    .Take(9)
-                    .ToList();
-
-                villagers.Add(this.RemainingVillagers.First());
-
-                this.Options = villagers
-                    .OrderBy(v => v.Name)
-                    .Select(v => new VillagerOption(v))
-                    .ToList();
-            }
-            else
-                this.Options = null;
+            this.Mode = mode;
+            this.CurrentVillagerId = currentVillagerId;
         }
     }
 }
