@@ -36,4 +36,10 @@ export class GameService {
 
         return this.httpClient.post<Game>(requestUrl, request);
     }
+
+    autoComplete(name: string): Observable<Array<string>> {
+        const requestUrl = `/api/Game/AutoComplete?name=${name}`;
+
+        return this.httpClient.get<Array<string>>(requestUrl);
+    }
 }

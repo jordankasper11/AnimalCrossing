@@ -14,7 +14,14 @@
                 <h2>Which villager lives here?</h2>
                 <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
                     <div *ngIf="game.mode == GameMode.Guess">
-                        <input type="text" id="name" formControlName="name" placeholder="Enter name here" autofocus autocomplete="off" />
+                        <div class="textbox">
+                            <input type="text" id="name" formControlName="name" placeholder="Enter name here" autofocus autocomplete="off" (blur)="hideAutoComplete()" />
+                            <div *ngIf="autoComplete?.length" class="textbox__auto-complete">
+                                <ul>
+                                    <li *ngFor="let name of autoComplete" [innerHTML]="getAutoCompleteItem(name)" (click)="setName(name)"></li>
+                                </ul>
+                            </div>
+                        </div>
                         <button type="submit" [attr.disabled]="!form.valid ? true : null">Guess</button>
                     </div>
                     <div *ngIf="game.mode == GameMode.MultipleChoice">

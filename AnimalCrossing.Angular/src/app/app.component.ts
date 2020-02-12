@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { debounceTime, tap, switchMap, finalize, filter, distinctUntilChanged } from 'rxjs/operators';
 import { GameService } from './service';
 import { Game, GameMode, GuessRequest, SkipRequest } from './models';
 
@@ -12,6 +13,8 @@ export class AppComponent implements OnInit {
 
     game: Game;
     form: FormGroup;
+    autoComplete: Array<string>;
+    autoCompleteValue: string;
 
     constructor(private gameService: GameService) {
     }
@@ -31,6 +34,19 @@ export class AppComponent implements OnInit {
 
             if (game.mode == GameMode.MultipleChoice)
                 form.valueChanges.subscribe(async () => await this.submit());
+            else {
+                const name = form.get('name');
+
+                name.valueChanges
+                    .pipe(
+                        debounceTime(500),
+                        distinctUntilChanged()
+                    )
+                    .subscribe(async (value: string) => {
+                        this.autoComplete = await this.gameService.autoComplete(value.trim()).toPromise();
+                        this.autoCompleteValue = value.trim();
+                    });
+            }
 
             return form;
         }
@@ -47,6 +63,8 @@ export class AppComponent implements OnInit {
 
     async submit(): Promise<void> {
         if (this.form.valid) {
+            this.hideAutoComplete();
+
             const request = new GuessRequest(this.game.id, this.form.value.name);
             const response = await this.gameService.guess(request).toPromise();
 
@@ -60,6 +78,26 @@ export class AppComponent implements OnInit {
         const game = await this.gameService.create(mode, this.game != null ? this.game.id : null).toPromise();
 
         this.bindGame(game);
+    }
+
+    getAutoCompleteItem(name: string): string {
+        const matched = new RegExp('^' + this.autoCompleteValue, "i").exec(name)[0];
+        const remaining = name.substring(matched.length);
+
+        return `<strong>${matched}</strong>${remaining}`;
+    }
+
+    hideAutoComplete() {
+        setTimeout(() => {
+            this.autoComplete = null;
+            this.autoCompleteValue = null;
+        }, 100);
+    }
+
+    setName(name: string): void {
+        const control = this.form.get('name');
+
+        control.setValue(name);
     }
 
     private bindGame(game: Game): void {

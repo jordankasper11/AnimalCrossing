@@ -13,9 +13,12 @@ namespace AnimalCrossing.Web.Controllers
     {
         private GameRepository GameRepository { get; set; }
 
-        public GameController(GameRepository gameRepository)
+        private VillagerRepository VillagerRepository { get; set; }
+
+        public GameController(GameRepository gameRepository, VillagerRepository villagerRepository)
         {
             this.GameRepository = gameRepository;
+            this.VillagerRepository = villagerRepository;
         }
 
         [HttpGet]
@@ -73,6 +76,27 @@ namespace AnimalCrossing.Web.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpGet("AutoComplete")]
+        public ActionResult<List<string>> AutoComplete([FromQuery]string name)
+        {
+            if (!String.IsNullOrWhiteSpace(name))
+            {
+                name = name.Trim();
+
+                var names = this.VillagerRepository.Villagers
+                    .Select(v => v.Name)
+                    .OrderBy(n => n)
+                    .Where(n => n.StartsWith(name, StringComparison.OrdinalIgnoreCase))
+                    .Take(10)
+                    .ToList();
+
+                if (names.Count != 1 || !names.First().Equals(name, StringComparison.OrdinalIgnoreCase))
+                    return names;
+            }
+
+            return null;
         }
     }
 }
