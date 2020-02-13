@@ -3,12 +3,30 @@
 @import '_fonts';
 
 body {
-    padding: 0 0 250px 0;
+    padding: 0 0 200px 0;
     background: url('../assets/background-water.png') repeat-x left bottom, $color-background;
     color: $color-text;
     font-family: $font-primary;
     font-size: 18px;
     line-height: 1;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    padding: $padding $padding $margin $padding;
+
+    img {
+        margin: 0 $padding 0 0;
+        width: 250px;
+    }
+
+    h1 {
+        align-self: center;
+        margin: 0;
+        max-width: 150px;
+        font-size: 48px;;
+    }
 }
 
 main {
@@ -38,6 +56,8 @@ img {
     max-width: 100%;
 
     &.house {
+        border-top: solid 5px $color-primary;
+        border-bottom: solid 5px $color-primary;
         width: 800px;
     }
 }
@@ -168,12 +188,6 @@ button {
     }
 }
 
-.logo {
-    margin: 0 auto $padding auto;
-    padding: $padding;
-    width: 300px;
-}
-
 .container {
     display: flex;
     flex-direction: column;
@@ -237,7 +251,7 @@ button {
 
 footer {
     position: relative;
-    top: 170px;
+    top: 120px;
     opacity: $opacity-disabled;
     font-size: 14px;
     text-align: center;
@@ -245,11 +259,14 @@ footer {
 }
 
 @include responsive-tablet {
-    main {
-        padding: $padding;
+    header {
+        img {
+            width: 300px;
+        }
 
-        .container {
-            padding: 0;
+        h1 {
+            max-width: none;
+            font-size: 72px;;
         }
     }
 
@@ -257,7 +274,12 @@ footer {
         flex-direction: row;
     }
 
+    img.house {
+        border: solid 5px $color-primary;
+    }
+
     .statistics {
+        margin: 0;
         width: 30%;
     }
 

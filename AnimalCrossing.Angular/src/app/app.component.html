@@ -1,8 +1,10 @@
-<img src="/assets/animal-crossing-logo.png" alt="Animal Crossing" class="logo" />
-<h1>House Test</h1>
+<header>
+    <img src="/assets/animal-crossing-logo.png" alt="Animal Crossing" class="logo" />
+    <h1>House Test</h1>
+</header>
 <main *ngIf="game">
-    <div class="container">
-        <div *ngIf="game.previousVillager" class="previous-villager">
+    <div *ngIf="game.previousVillager" class="container">
+        <div class="previous-villager">
             <span>Previous Villager:</span>
             <a [href]="game.previousVillager.url" target="_blank">{{ game.previousVillager.name }}</a>
         </div>
