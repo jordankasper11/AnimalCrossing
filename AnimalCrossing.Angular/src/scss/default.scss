@@ -18,14 +18,16 @@ header {
 
     img {
         margin: 0 $padding 0 0;
-        width: 250px;
+        width: 180px;
+        height: auto;
     }
 
     h1 {
         align-self: center;
         margin: 0;
         max-width: 150px;
-        font-size: 48px;;
+        font-size: 42px;;
+        line-height: 1.2;
     }
 }
 
@@ -267,6 +269,7 @@ footer {
         h1 {
             max-width: none;
             font-size: 72px;;
+            line-height: 1;
         }
     }
 
