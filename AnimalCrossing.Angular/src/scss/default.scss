@@ -16,10 +16,14 @@ header {
     justify-content: center;
     padding: $padding $padding $margin $padding;
 
-    img {
+    .logo {
         margin: 0 $padding 0 0;
         width: 180px;
         height: auto;
+
+        img {
+            margin: 0;
+        }
     }
 
     h1 {
@@ -262,7 +266,8 @@ footer {
 
 @include responsive-tablet {
     header {
-        img {
+        .logo {
+            margin-right: $margin;
             width: 300px;
         }
 
