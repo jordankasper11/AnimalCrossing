@@ -77,6 +77,7 @@ export class AppComponent implements OnInit {
     }
 
     async newGame(type: GameType, mode: GameMode): Promise<void> {
+        localStorage.setItem('GameType', type.toString());
         localStorage.setItem('GameMode', mode.toString());
 
         const game = await this.gameService.create(type, mode, this.game != null ? this.game.id : null).toPromise();
