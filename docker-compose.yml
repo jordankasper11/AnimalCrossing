@@ -8,7 +8,7 @@ services:
       
   animalcrossing-web:
     container_name: animalcrossing-web
-    image: animalcrossing-web
+    image: jordankasper11/animalcrossing-web
     build:
       context: .
       dockerfile: Dockerfile
