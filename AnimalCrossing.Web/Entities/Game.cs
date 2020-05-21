@@ -16,12 +16,12 @@ namespace AnimalCrossing.Web.Entities
     {
         public Guid Id { get; private set; }
 
-        public string HouseImageUrl { get; private set; }
+        public string HouseFileName { get; private set; }
 
         public CurrentVillager(Villager villager)
         {
             this.Id = villager.Id;
-            //this.HouseImageUrl = villager.HouseImageUrl;
+            this.HouseFileName = villager.HouseFileName;
         }
     }
 

@@ -62,9 +62,9 @@ img {
     max-width: 100%;
 
     &.house {
-        border-top: solid 5px $color-primary;
-        border-bottom: solid 5px $color-primary;
-        width: 800px;
+        margin: 0 auto;
+        max-height: 600px;
+        width: auto;
     }
 }
 
@@ -284,10 +284,6 @@ footer {
 
     .container {
         flex-direction: row;
-    }
-
-    img.house {
-        border: solid 5px $color-primary;
     }
 
     .statistics {

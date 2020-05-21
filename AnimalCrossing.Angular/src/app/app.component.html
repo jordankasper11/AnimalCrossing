@@ -7,11 +7,10 @@
 <main *ngIf="game">
     <div *ngIf="game.previousVillager" class="container">
         <div class="previous-villager">
-            <span>Previous Villager:</span>
-            <a [href]="game.previousVillager.url" target="_blank">{{ game.previousVillager.name }}</a>
+            <span>Previous Villager:</span> {{ game.previousVillager.name }}
         </div>
     </div>
-    <img *ngIf="!game.completed" [src]="game.currentVillager.houseImageUrl" alt="" class="house" />
+    <img *ngIf="!game.completed" [src]="'/images/' + game.currentVillager.houseFileName" alt="" class="house" />
     <div class="container">
         <div class="game">
             <div *ngIf="!game.completed">
