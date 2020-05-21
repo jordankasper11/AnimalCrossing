@@ -22,9 +22,9 @@ namespace AnimalCrossing.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Game>> Create([FromQuery]GameMode mode, [FromQuery]Guid? previousGameId = null)
+        public async Task<ActionResult<Game>> Create([FromQuery]GameType type, [FromQuery]GameMode mode, [FromQuery]Guid? previousGameId = null)
         {
-            var game = await GameRepository.Create(mode);
+            var game = await GameRepository.Create(type, mode);
 
             if (previousGameId != null)
                 await GameRepository.Remove(previousGameId.Value);

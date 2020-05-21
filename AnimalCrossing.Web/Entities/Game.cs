@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace AnimalCrossing.Web.Entities
 {
+    public enum GameType
+    {
+        Villagers,
+        Houses
+    }
+
     public enum GameMode
     {
         Guess,
@@ -16,12 +22,12 @@ namespace AnimalCrossing.Web.Entities
     {
         public Guid Id { get; private set; }
 
-        public string HouseFileName { get; private set; }
+        public string ImageFileName { get; private set; }
 
-        public CurrentVillager(Villager villager)
+        public CurrentVillager(GameType gameType, Villager villager)
         {
             this.Id = villager.Id;
-            this.HouseFileName = villager.HouseFileName;
+            this.ImageFileName = gameType == GameType.Villagers ? villager.ImageFileName : villager.HouseFileName;
         }
     }
 
@@ -42,6 +48,8 @@ namespace AnimalCrossing.Web.Entities
     {
         public Guid Id => this.GameData.Id;
 
+        public GameType Type => this.GameData.Type;
+
         public GameMode Mode => this.GameData.Mode;
 
         public bool Completed => !this.RemainingVillagers.Any();
@@ -56,7 +64,7 @@ namespace AnimalCrossing.Web.Entities
 
         public Villager PreviousVillager => this.GameData.CompletedVillagerIds?.Any() == true ? this.Villagers.First(v => v.Id == this.GameData.CompletedVillagerIds.Last()) : null;
 
-        public CurrentVillager CurrentVillager => this.GameData.CurrentVillagerId != null ? new CurrentVillager(this.Villagers.First(v => v.Id == this.GameData.CurrentVillagerId.Value)) : null;
+        public CurrentVillager CurrentVillager => this.GameData.CurrentVillagerId != null ? new CurrentVillager(this.GameData.Type, this.Villagers.First(v => v.Id == this.GameData.CurrentVillagerId.Value)) : null;
 
         public List<VillagerOption> Options
         {
@@ -166,6 +174,8 @@ namespace AnimalCrossing.Web.Entities
     {
         public Guid Id { get; set; }
 
+        public GameType Type { get; set; }
+
         public GameMode Mode { get; set; }
 
         public Guid? CurrentVillagerId { get; set; }
@@ -184,8 +194,9 @@ namespace AnimalCrossing.Web.Entities
             this.CompletedVillagerIds = new List<Guid>();
         }
 
-        public GameData(GameMode mode, Guid currentVillagerId) : this()
+        public GameData(GameType type, GameMode mode, Guid currentVillagerId) : this()
         {
+            this.Type = type;
             this.Mode = mode;
             this.CurrentVillagerId = currentVillagerId;
         }

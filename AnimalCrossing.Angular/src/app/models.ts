@@ -11,12 +11,17 @@ export class Villager {
 
 export class CurrentVillager {
     public id: string;
-    public houseFileName: string;
+    public imageFileName: string;
 }
 
 export class VillagerOption {
     public id: string;
     public name: string;
+}
+
+export enum GameType {
+    Villagers,
+    Houses
 }
 
 export enum GameMode {
@@ -26,6 +31,7 @@ export enum GameMode {
 
 export class Game {
     public id: string;
+    public type: GameType;
     public mode: GameMode;
     public completed: boolean;
     public correctGuesses: number;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { Game, GameMode, GuessRequest, GuessResponse, SkipRequest } from './models';
+import { Game, GameType, GameMode, GuessRequest, GuessResponse, SkipRequest } from './models';
 
 @Injectable({
     providedIn: 'root'
@@ -10,8 +10,8 @@ export class GameService {
     constructor(private httpClient: HttpClient) {
     }
 
-    create(mode: GameMode, previousGameId?: string) {
-        let requestUrl = `/api/Game?mode=${mode}`;
+    create(type: GameType, mode: GameMode, previousGameId?: string) {
+        let requestUrl = `/api/Game?type=${type}&mode=${mode}`;
 
         if (previousGameId)
             requestUrl += `&previousGameId=${previousGameId}`;

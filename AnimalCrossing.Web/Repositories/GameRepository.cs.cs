@@ -24,10 +24,10 @@ namespace AnimalCrossing.Web.Repositories
             CacheManager = cacheManager;
         }
 
-        public async Task<Game> Create(GameMode gameMode)
+        public async Task<Game> Create(GameType gameType, GameMode gameMode)
         {
             var firstVillagerId = this.VillagerRepository.Villagers.OrderBy(v => Guid.NewGuid()).First().Id;
-            var gameData = new GameData(gameMode, firstVillagerId);
+            var gameData = new GameData(gameType, gameMode, firstVillagerId);
             var game = new Game(gameData, this.VillagerRepository.Villagers);
 
             await Save(game);

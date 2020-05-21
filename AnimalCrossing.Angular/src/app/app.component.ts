@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { debounceTime, tap, switchMap, finalize, filter, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { GameService } from './service';
-import { Game, GameMode, GuessRequest, SkipRequest } from './models';
+import { Game, GameType, GameMode, GuessRequest, SkipRequest } from './models';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
+    GameType = GameType;
     GameMode = GameMode;
 
     game: Game;
@@ -20,10 +21,13 @@ export class AppComponent implements OnInit {
     }
 
     async ngOnInit(): Promise<void> {
-        const storedValue = localStorage.getItem('GameMode');
-        const mode = storedValue ? GameMode[storedValue] : GameMode.Guess;
+        const storedType = localStorage.getItem('GameType');
+        const type = storedType ? GameType[storedType]: GameType.Villagers;
 
-        await this.newGame(mode);
+        const storedMode = localStorage.getItem('GameMode');
+        const mode = storedMode ? GameMode[storedMode] : GameMode.Guess;
+
+        await this.newGame(type, mode);
     }
 
     buildForm(game: Game): FormGroup {
@@ -72,10 +76,10 @@ export class AppComponent implements OnInit {
         }
     }
 
-    async newGame(mode: GameMode): Promise<void> {
+    async newGame(type: GameType, mode: GameMode): Promise<void> {
         localStorage.setItem('GameMode', mode.toString());
 
-        const game = await this.gameService.create(mode, this.game != null ? this.game.id : null).toPromise();
+        const game = await this.gameService.create(type, mode, this.game != null ? this.game.id : null).toPromise();
 
         this.bindGame(game);
     }
