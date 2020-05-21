@@ -23,7 +23,7 @@ namespace AnimalCrossing.Web.Repositories
             var json = File.ReadAllText(filePath);
             var villagers = JsonSerializer.Deserialize<List<Villager>>(json);
 
-            return villagers.Take(5).ToList().AsReadOnly();
+            return villagers.AsReadOnly();
         }
     }
 }
