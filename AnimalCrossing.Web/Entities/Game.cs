@@ -21,7 +21,7 @@ namespace AnimalCrossing.Web.Entities
         public CurrentVillager(Villager villager)
         {
             this.Id = villager.Id;
-            this.HouseImageUrl = villager.HouseImageUrl;
+            //this.HouseImageUrl = villager.HouseImageUrl;
         }
     }
 

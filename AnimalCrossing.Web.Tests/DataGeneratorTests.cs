@@ -1,3 +1,4 @@
+using AnimalCrossing.Web.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -5,70 +6,59 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AnimalCrossing.Web.Tests
 {
-    public class Villager
-    {
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
-
-        public string Url { get; set; }
-
-        public string HouseFileName { get; set; }
-
-        public Villager()
-        {
-        }
-
-        public Villager(Guid id, string name, string url, string houseFileName)
-        {
-            this.Id = id;
-            this.Name = name;
-            this.Url = url;
-            this.HouseFileName = houseFileName;
-        }
-    }
-
     [TestClass]
     public class DataGeneratorTests
     {
         [TestMethod]
         public async Task GetVillagersJson()
         {
-            var contents = await File.ReadAllTextAsync("C:\\Projects\\AnimalCrossing\\Source.txt");
-            var hyperlinks = Regex.Matches(contents, "<a href=\"(?<VillagerUrl>[^\"]+)\">(?:<strong>)?(?<VillagerName>[^<]+)(?:</strong>)?</a>", RegexOptions.IgnoreCase);
-            var houseImages = Regex.Matches(contents, "(?<=<img src=\")[^\"]+\\.jpe?g", RegexOptions.IgnoreCase);
             var villagers = new List<Villager>();
+            var directoryInfo = new DirectoryInfo(@"C:\Projects\villagerdb-master\data\villagers");
 
-            for (var i = 0; i < hyperlinks.Count; i++)
+            foreach (var fileInfo in directoryInfo.GetFiles())
             {
-                var hyperLink = hyperlinks[i];
-                var houseImage = houseImages[i];
-                var id = Guid.NewGuid();
-                var name = hyperLink.Groups["VillagerName"].Value;
-                var url = hyperLink.Groups["VillagerUrl"].Value;
-                var houseFileName = await SaveHouseImage(id, houseImage.Value);
+                var contents = await File.ReadAllTextAsync(fileInfo.FullName);
+                var json = JsonDocument.Parse(contents);
 
-                villagers.Add(new Villager(id, name, url, houseFileName));
+                if (json.RootElement.TryGetProperty("games", out JsonElement games) && games.TryGetProperty("nh", out JsonElement newHorizons))
+                {
+                    var id = json.RootElement.GetProperty("id").GetString();
+                    var villager = new Villager();
+
+                    villager.Id = Guid.NewGuid();
+                    villager.Name = json.RootElement.GetProperty("name").GetString();
+                    villager.Species = json.RootElement.GetProperty("species").GetString();
+                    villager.Gender = json.RootElement.GetProperty("gender").GetString();
+                    villager.Birthday = json.RootElement.GetProperty("birthday").GetString();
+                    villager.Personality = newHorizons.GetProperty("personality").GetString();
+                    villager.Catchphrase = newHorizons.GetProperty("phrase").GetString();
+                    villager.ImageFileName = await DownloadFile($"https://villagers.club/assets/villagers/medium/{id.ToLower()}.png", $@"C:\Projects\AnimalCrossing\AnimalCrossing.Web\images", $"villager-{Guid.NewGuid()}.png");
+                    villager.HouseFileName = await CopyHouseFile(villager.Name, @"C:\Projects\AC Houses", $@"C:\Projects\AnimalCrossing\AnimalCrossing.Web\images", $"house-{Guid.NewGuid()}.png");
+
+                    villagers.Add(villager);
+                }
             }
 
-            var json = JsonSerializer.Serialize(villagers);
+            var output = JsonSerializer.Serialize(villagers);
 
-            Assert.IsTrue(!String.IsNullOrWhiteSpace(json));
+            Assert.IsTrue(!String.IsNullOrWhiteSpace(output));
+
+            File.WriteAllText(@"C:\Projects\AnimalCrossing\AnimalCrossing.Web\data\villagers.json", output);
         }
 
-        private async Task<string> SaveHouseImage(Guid id, string url)
+        private async Task<string> DownloadFile(string sourceUrl, string destinationPath, string fileName)
         {
-            var fileName = $"{id}-house.jpg";
-            var filePath = $"C:\\Projects\\AnimalCrossing\\images\\{fileName}";
+            var filePath = $@"{ destinationPath}\{fileName}";
 
             using (var httpClient = new HttpClient())
             {
-                var response = await httpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(sourceUrl);
 
                 response.EnsureSuccessStatusCode();
 
@@ -78,6 +68,19 @@ namespace AnimalCrossing.Web.Tests
                     await responseStream.CopyToAsync(fileStream);
                 }
             }
+
+            return fileName;
+        }
+
+        private async Task<string> CopyHouseFile(string name, string sourcePath, string destinationPath, string fileName)
+        {
+            var directoryInfo = new DirectoryInfo(sourcePath);
+            var fileInfo = directoryInfo.GetFiles().FirstOrDefault(f => f.Name.EndsWith($"_{name}.png", StringComparison.OrdinalIgnoreCase));
+
+            if (fileInfo == null)
+                throw new InvalidOperationException($"Missing file for {name}");
+
+            fileInfo.CopyTo($@"{destinationPath.TrimEnd('\\')}\{fileName}");
 
             return fileName;
         }
