@@ -2,7 +2,7 @@
     <div class="logo">
         <img src="/assets/animal-crossing-logo.png" alt="Animal Crossing: New Horizons" />
     </div>
-    <ng-container [ngSwitch]="game.type">
+    <ng-container [ngSwitch]="game?.type">
         <h1 *ngSwitchCase="GameType.Villagers">Villager Test</h1>
         <h1 *ngSwitchCase="GameType.Houses">House Test</h1>
     </ng-container>
